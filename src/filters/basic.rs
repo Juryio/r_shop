@@ -23,3 +23,8 @@ pub fn invert(image: &mut RgbaImage) {
         // Alpha is untouched
     }
 }
+
+pub fn gaussian_blur(image: &mut RgbaImage, sigma: f32) {
+    let blurred = imageproc::filter::gaussian_blur_f32(image, sigma);
+    *image = blurred;
+}

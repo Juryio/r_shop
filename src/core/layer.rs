@@ -1,11 +1,19 @@
 use image::RgbaImage;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BlendMode {
+    Normal,
+    Multiply,
+    Screen,
+}
+
 /// Represents a single layer in the document.
 pub struct Layer {
     pub name: String,
     pub data: RgbaImage,
     pub visible: bool,
     pub opacity: u8,
+    pub blend_mode: BlendMode,
 }
 
 impl Layer {
@@ -15,6 +23,7 @@ impl Layer {
             data: RgbaImage::new(width, height),
             visible: true,
             opacity: 255,
+            blend_mode: BlendMode::Normal,
         }
     }
 
@@ -31,6 +40,7 @@ impl Layer {
             data: self.data.clone(),
             visible: self.visible,
             opacity: self.opacity,
+            blend_mode: self.blend_mode,
         }
     }
 }

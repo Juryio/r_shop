@@ -2,7 +2,6 @@ mod app;
 mod core;
 mod tools;
 mod filters;
-mod ui;
 
 use app::RustyPsApp;
 

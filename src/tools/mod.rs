@@ -5,4 +5,6 @@ pub mod bucket;
 pub enum Tool {
     Brush,
     Fill,
+    Eraser,
+    Picker,
 }
