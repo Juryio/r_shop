@@ -1,7 +1,7 @@
 use eframe::egui;
 use crate::core::document::Document;
 use crate::tools::{Tool, brush::draw_line, bucket::flood_fill};
-use crate::filters::basic::{grayscale, invert, gaussian_blur};
+use crate::filters::basic::{grayscale, invert, gaussian_blur, brightness_contrast, sepia};
 
 pub struct RustyPsApp {
     document: Document,
@@ -99,6 +99,18 @@ impl eframe::App for RustyPsApp {
                             gaussian_blur(&mut active_layer.data, 3.0);
                         }
                     }
+                    if ui.button("Sepia").clicked() {
+                        self.document.save_state();
+                        if let Some(active_layer) = self.document.get_active_layer_mut() {
+                            sepia(&mut active_layer.data);
+                        }
+                    }
+                    if ui.button("Enhance (Auto Bright/Cont)").clicked() {
+                        self.document.save_state();
+                        if let Some(active_layer) = self.document.get_active_layer_mut() {
+                            brightness_contrast(&mut active_layer.data, 10, 20.0);
+                        }
+                    }
                 });
             });
         });
@@ -189,10 +201,24 @@ impl eframe::App for RustyPsApp {
                 }
 
                 ui.separator();
-                if ui.button("+ New Layer").clicked() {
-                    let new_layer_idx = self.document.layers.len() + 1;
-                    self.document.add_layer(format!("Layer {}", new_layer_idx));
-                }
+                ui.horizontal(|ui| {
+                    if ui.button("➕ New").clicked() {
+                        let new_layer_idx = self.document.layers.len() + 1;
+                        self.document.add_layer(format!("Layer {}", new_layer_idx));
+                    }
+                    if ui.button("📄 Duplicate").clicked() {
+                        self.document.duplicate_active_layer();
+                    }
+                });
+                ui.horizontal(|ui| {
+                    if ui.button("✨ Clear").clicked() {
+                        self.document.save_state();
+                        self.document.clear_active_layer();
+                    }
+                    if ui.button("🗑 Delete").clicked() {
+                        self.document.delete_active_layer();
+                    }
+                });
 
                 ui.separator();
                 ui.heading("Tool Properties");

@@ -68,6 +68,35 @@ impl Document {
         self.active_layer_index = self.layers.len() - 1;
     }
 
+    pub fn duplicate_active_layer(&mut self) {
+        if self.active_layer_index < self.layers.len() {
+            self.is_dirty = true;
+            let mut duplicate = self.layers[self.active_layer_index].clone_data();
+            duplicate.name = format!("{} Copy", duplicate.name);
+            self.layers.insert(self.active_layer_index + 1, duplicate);
+            self.active_layer_index += 1;
+        }
+    }
+
+    pub fn delete_active_layer(&mut self) {
+        if self.layers.len() > 1 && self.active_layer_index < self.layers.len() {
+            self.is_dirty = true;
+            self.layers.remove(self.active_layer_index);
+            if self.active_layer_index >= self.layers.len() {
+                self.active_layer_index = self.layers.len() - 1;
+            }
+        }
+    }
+
+    pub fn clear_active_layer(&mut self) {
+        if let Some(layer) = self.layers.get_mut(self.active_layer_index) {
+            self.is_dirty = true;
+            for pixel in layer.data.pixels_mut() {
+                *pixel = image::Rgba([0, 0, 0, 0]);
+            }
+        }
+    }
+
     pub fn get_active_layer_mut(&mut self) -> Option<&mut Layer> {
         self.is_dirty = true;
         self.layers.get_mut(self.active_layer_index)
